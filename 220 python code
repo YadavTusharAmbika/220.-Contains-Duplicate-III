@@ -1,0 +1,29 @@
+
+from typing import List
+import bisect
+
+class Solution:
+    def containsNearbyAlmostDuplicate(self, nums: List[int], indexDiff: int, valueDiff: int) -> bool:
+        if indexDiff <= 0 or valueDiff < 0:
+            return False
+
+        window = []
+        left = 0
+
+        for num in nums:
+            # Find position where num - valueDiff would be inserted
+            pos = bisect.bisect_left(window, num - valueDiff)
+
+            # Check closest candidate
+            if pos < len(window) and abs(window[pos] - num) <= valueDiff:
+                return True
+
+            # Insert current number
+            bisect.insort(window, num)
+
+            # Maintain window size
+            if len(window) > indexDiff:
+                del window[bisect.bisect_left(window, nums[left])]
+                left += 1
+
+        return False
